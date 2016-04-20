@@ -1,0 +1,13 @@
+<div>{{item.name}}</div>
+
+
+{{#unless isDragging}}
+  {{#sortable-list
+    items=item.children
+    tagName="ul"
+    itemTagName="li"
+    as |child|
+  }}
+    {{recursive-item item=child}}
+  {{/sortable-list}}
+{{/unless}}

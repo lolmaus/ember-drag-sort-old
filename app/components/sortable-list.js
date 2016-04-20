@@ -1,0 +1,1 @@
+export { default } from 'ember-drag-sort/components/sortable-list';

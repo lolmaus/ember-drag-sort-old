@@ -1,0 +1,21 @@
+{{#sortable-list
+  items=items
+  tagName="ul"
+  itemTagName="li"
+  as |item|
+}}
+  {{item.name}}
+{{/sortable-list}}
+
+{{#sortable-list
+  class="list2"
+  items=items2
+  tagName="ul"
+  itemTagName="li"
+  as |item|
+}}
+  {{item.name}}
+{{/sortable-list}}
+
+
+{{recursive-item item=recursive}}
