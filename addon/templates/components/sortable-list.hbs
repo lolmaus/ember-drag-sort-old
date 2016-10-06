@@ -1,12 +1,13 @@
-{{#each items as |item|}}
+{{#each items as |item index|}}
   {{#sortable-item
-    item=item
-    items=items
-    group=group
-    debouncePeriod=debouncePeriod
-    draggingClass=draggingItemClass
-    classNameDefault=classNameItemDefault
+    item             = item
+    items            = items
+    group            = group
+    handleSelector   = handleSelector
+    debouncePeriod   = debouncePeriod
+    draggingClass    = draggingItemClass
+    classNameDefault = classNameItemDefault
   }}
-    {{yield item}}
+    {{yield item index}}
   {{/sortable-item}}
 {{/each}}

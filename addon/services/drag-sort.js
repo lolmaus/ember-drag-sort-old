@@ -18,10 +18,17 @@ export default Service.extend({
 
 
 
+  // ----- Computed properties -----
+  dragInProgress: computed('item', function () {
+    return this.get('item') != null;
+  }),
+
+
+
   // ----- Public methods -----
   started ({groupName, items, item}) {
 
-    if (this.get('item')) {
+    if (this.get('dragInProgress')) {
       return;
     }
 

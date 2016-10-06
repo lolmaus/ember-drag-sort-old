@@ -14,12 +14,14 @@ import layout from '../templates/components/sortable-item';
 export default Component.extend({
 
   // ----- Attributes -----
-  item:             null,
-  items:            null,
-  group:            'default',
-  draggingClass:    '-dragging',
-  classNameDefault: 'sortableItem',
-  debouncePeriod:       300,
+  item:               undefined,
+  items:              undefined,
+  group:              'default',
+  draggingClass:      '-dragging',
+  handleDefinedClass: '-handleDefined',
+  classNameDefault:   'sortableItem',
+  debouncePeriod:     100,
+  handleSelector:     undefined,
 
 
 
@@ -39,12 +41,14 @@ export default Component.extend({
   classNameBindings: [
     'classNameDefault',
     'draggingClassCP',
+    'handleDefinedClassCP',
   ],
 
 
 
   // ----- Static properties -----
-  draggable:        true,
+  draggable:    true,
+  isHandleUsed: undefined,
 
 
 
@@ -59,12 +63,67 @@ export default Component.extend({
     }
   }),
 
+  handleDefinedClassCP: computed('handleSelector', 'handleDefinedClass', function () {
+    if (this.get('handleSelector')) {
+      return this.get('handleDefinedClass');
+    }
+  }),
+
+  $handle: computed('handle', function () {
+    const  handleSelector = this.get('handleSelector');
+    return handleSelector && this.$(handleSelector);
+  }),
+
 
 
   // ----- Overridden methods -----
-  dragStart (/*event*/) {
-    this
-      .get('dragSort')
+  mouseDown ({target}) {
+    this.updateIsHandleUsed(target);
+  },
+
+  dragStart (event) {
+    this.startDragging(event);
+  },
+
+  dragEnd (/*event*/) {
+    this.endDragging();
+  },
+
+  dragOver: function(/*event*/) {
+    this.reportDragOver();
+  },
+
+
+
+  // ----- Custom methods -----
+  updateIsHandleUsed (target) {
+    const $handle = this.get('$handle');
+
+    if (!$handle) { return; }
+
+    const isHandleUsed =
+      $handle
+        .get(0)
+        .contains(target);
+
+    this.setProperties({isHandleUsed});
+  },
+
+  startDragging (event) {
+    const handleSelector  = this.get('handleSelector');
+    const isHandleUsed    = this.get('isHandleUsed');
+    const dragSortService = this.get('dragSort');
+
+    console.log('startDragging', handleSelector, isHandleUsed)
+
+    if (handleSelector && !isHandleUsed) {
+      if (!dragSortService.get('dragInProgress')) {
+        event.preventDefault();
+      }
+      return false;
+    }
+
+    dragSortService
       .started({
         item:      this.get('item'),
         items:     this.get('items'),
@@ -72,7 +131,7 @@ export default Component.extend({
       });
   },
 
-  dragEnd (/*event*/) {
+  endDragging () {
     console.log('item dragEnd')
     const service        = this.get('dragSort');
     // const debouncePeriod = this.get('debouncePeriod');
@@ -81,14 +140,15 @@ export default Component.extend({
     service.ended();
   },
 
-  dragOver: function(/*event*/) {
+  reportDragOver () {
     const item           = this.get('item');
     const service        = this.get('dragSort');
-    const debouncePeriod = this.get('debouncePeriod');
+    // const debouncePeriod = this.get('debouncePeriod');
 
     // throttle(service, service.above, item, debouncePeriod, false);
     service.above(item);
 
     return false;
   }
+
 });
