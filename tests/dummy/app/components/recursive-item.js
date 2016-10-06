@@ -8,7 +8,7 @@ const {
 
 import layout from '../templates/components/recursive-item';
 
-export default Ember.Component.extend({
+export default Component.extend({
 
   // ----- Services -----
   dragSort: service(),
@@ -17,6 +17,7 @@ export default Ember.Component.extend({
 
   // ----- Overridden properties -----
   layout,
+  classNames: ['recursiveItem'],
 
 
 
@@ -24,6 +25,5 @@ export default Ember.Component.extend({
   isDragging: computed('item', 'dragSort.item', function () {
     return this.get('item') === this.get('dragSort.item');
   }),
-
 
 });

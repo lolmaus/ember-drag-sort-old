@@ -1,11 +1,14 @@
-<div>{{item.name}}</div>
+<div class="recursiveItem-handle">
+  {{item.name}}
+</div>
 
 
 {{#unless isDragging}}
   {{#sortable-list
-    items=item.children
-    tagName="ul"
-    itemTagName="li"
+    items       = item.children
+    tagName     = "ul"
+    itemTagName = "li"
+    handle      = ".recursiveItem-handle"
     as |child|
   }}
     {{recursive-item item=child}}

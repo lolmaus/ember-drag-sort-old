@@ -14,12 +14,14 @@ import layout from '../templates/components/sortable-item';
 export default Component.extend({
 
   // ----- Attributes -----
-  item:             null,
-  items:            null,
-  group:            'default',
-  draggingClass:    '-dragging',
-  classNameDefault: 'sortableItem',
-  debouncePeriod:       300,
+  item:               undefined,
+  items:              undefined,
+  group:              'default',
+  draggingClass:      '-dragging',
+  handleDefinedClass: '-handleDefined',
+  classNameDefault:   'sortableItem',
+  debouncePeriod:     100,
+  handle:             undefined,
 
 
 
@@ -39,12 +41,14 @@ export default Component.extend({
   classNameBindings: [
     'classNameDefault',
     'draggingClassCP',
+    'handleDefinedClassCP',
   ],
 
 
 
   // ----- Static properties -----
-  draggable:        true,
+  draggable:    true,
+  isHandleUsed: undefined,
 
 
 
@@ -59,12 +63,65 @@ export default Component.extend({
     }
   }),
 
+  handleDefinedClassCP: computed('handle', 'handleDefinedClass', function () {
+    if (this.get('handle')) {
+      return this.get('handleDefinedClass');
+    }
+  }),
+
+  $handle: computed('handle', function () {
+    const  handleSelector = this.get('handle');
+    return handleSelector && this.$(handleSelector);
+  }),
+
 
 
   // ----- Overridden methods -----
-  dragStart (/*event*/) {
-    this
-      .get('dragSort')
+  mouseDown ({target}) {
+    this.updateIsHandleUsed(target);
+  },
+
+  dragStart (event) {
+    this.startDragging(event);
+  },
+
+  dragEnd () {
+    this.endDragging();
+  },
+
+  dragOver: function() {
+    this.draggingOver();
+  },
+
+
+
+  // ----- Custom methods -----
+  updateIsHandleUsed (target) {
+    const $handle = this.get('$handle');
+
+    if (!$handle) { return; }
+
+    const isHandleUsed =
+      $handle
+        .get(0)
+        .contains(target);
+
+    this.setProperties({isHandleUsed});
+  },
+
+  startDragging (event) {
+    const handle          = this.get('handle')
+    const isHandleUsed    = this.get('isHandleUsed')
+    const dragSortService = this.get('dragSort')
+
+    if (handle && !isHandleUsed) {
+      if (!dragSortService.get('dragInProgress')) {
+        event.preventDefault();
+      }
+      return;
+    }
+
+    dragSortService
       .started({
         item:      this.get('item'),
         items:     this.get('items'),
@@ -72,22 +129,21 @@ export default Component.extend({
       });
   },
 
-  dragEnd (/*event*/) {
-    console.log('item dragEnd')
-    const service        = this.get('dragSort');
+  endDragging () {
+    const service = this.get('dragSort');
     // const debouncePeriod = this.get('debouncePeriod');
 
     // throttle(service, service.ended, debouncePeriod, false);
     service.ended();
   },
 
-  dragOver: function(/*event*/) {
-    const item           = this.get('item');
-    const service        = this.get('dragSort');
+  draggingOver () {
+    const item    = this.get('item');
+    const service = this.get('dragSort');
     const debouncePeriod = this.get('debouncePeriod');
 
-    // throttle(service, service.above, item, debouncePeriod, false);
-    service.above(item);
+    throttle(service, service.above, item, debouncePeriod, false);
+    // service.above(item);
 
     return false;
   }

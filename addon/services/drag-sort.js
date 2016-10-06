@@ -3,7 +3,6 @@ import Ember from 'ember';
 const {
   computed,
   Service,
-  $,
   run: {later}
 } = Ember;
 
@@ -18,10 +17,20 @@ export default Service.extend({
 
 
 
+  // ----- Computed properties -----
+  dragInProgress: computed('item', function () {
+    return this.get('item') != null;
+  }),
+
+
+
   // ----- Public methods -----
   started ({groupName, items, item}) {
 
-    if (this.get('item')) {
+
+    console.log('dragSort attempt', item, this.get('item'));
+
+    if (this.get('dragInProgress')) {
       return;
     }
 
@@ -51,27 +60,32 @@ export default Service.extend({
   },
 
   above (underItem) {
-    // console.log('dragSort above', underItem);
+    console.log('dragSort above', underItem);
 
     this._setPosition(underItem);
   },
 
   into (newItems) {
-    const oldItems = this.get('items');
+    const oldItems      = this.get('items');
     const originalItems = this.get('originalItems');
 
+    console.log('dragSort into', {oldItems, newItems});
+
     if (newItems === oldItems) {
+      console.log('newItems === oldItems')
       return;
     }
 
-    console.log('dragSort into', {oldItems, newItems});
-    const item     = this.get('item');
+    console.log('newItems !== oldItems')
+
+    const item = this.get('item');
 
     if (oldItems !== originalItems) {
+      console.log('newItems !== originalItems')
       oldItems.removeObject(item);
     }
 
-    newItems.addObject   (item);
+    newItems.addObject(item);
 
     this.set('items', newItems);
   },

@@ -6,7 +6,11 @@
   /* Required to make elements draggable in old WebKit */
   -khtml-user-drag: element;
   -webkit-user-drag: element;
-  cursor:      move;
+}
+
+.sortableItem:not('-handleDefined'),
+.recursiveItem-handle {
+  cursor: move;
 }
 
 

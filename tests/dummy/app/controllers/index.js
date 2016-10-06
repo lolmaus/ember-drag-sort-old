@@ -10,8 +10,8 @@ export default Controller.extend({
   // ----- Static properties -----
   items:  A([{name: 'foo'}, {name: 'bar'}, {name: 'baz'}]),
   items2: A([{name: 'quux'}]),
-  
-  recursive: {
+
+  papa: {
     name: 'papa',
     children: A([
       {name: 'foo', children: A([
