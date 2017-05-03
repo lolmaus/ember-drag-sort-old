@@ -13,9 +13,12 @@
   cursor: move;
 }
 
+.sortableItem.-isOutside {
+  display: none;
+}
+
 
 .sortableList {
-  outline:        2px dotted deeppink;
   padding-top:    1rem;
   padding-bottom: 1rem;
 }
@@ -25,4 +28,8 @@
 }
 .list2 li:not(:last-child) {
   margin-right: 1rem;
+}
+
+.sortableList.-dragging {
+  outline: 2px dotted deeppink;
 }

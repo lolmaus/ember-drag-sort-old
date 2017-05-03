@@ -23,6 +23,13 @@ export default Service.extend({
     return this.get('item') != null;
   }),
 
+  isInAnotherList: computed('items', 'originalItems', function () {
+    const items         = this.get('items');
+    const originalItems = this.get('originalItems');
+
+    return items && originalItems && items !== originalItems;
+  }),
+
 
 
   // ----- Public methods -----

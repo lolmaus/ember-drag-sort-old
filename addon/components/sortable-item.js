@@ -18,9 +18,10 @@ export default Component.extend({
   items:              undefined,
   group:              'default',
   draggingClass:      '-dragging',
+  isOutsideClass:     '-isOutside',
   handleDefinedClass: '-handleDefined',
   classNameDefault:   'sortableItem',
-  debouncePeriod:     100,
+  debouncePeriod:     50,
   handleSelector:     undefined,
 
 
@@ -42,6 +43,7 @@ export default Component.extend({
     'classNameDefault',
     'draggingClassCP',
     'handleDefinedClassCP',
+    'isOutsideClassCP',
   ],
 
 
@@ -69,6 +71,23 @@ export default Component.extend({
     }
   }),
 
+  isOutsideClassCP: computed(
+    'item',
+    'dragSort.item',
+    'dragSort.isInAnotherList',
+    'items',
+    'dragSort.originalItems',
+    function () {
+      if (
+        this.get('item') === this.get('dragSort.item')
+        && this.get('items') === this.get('dragSort.originalItems')
+        && this.get('dragSort.isInAnotherList')
+      ) {
+        return this.get('isOutsideClass');
+      }
+    }
+  ),
+
   $handle: computed('handle', function () {
     const  handleSelector = this.get('handleSelector');
     return handleSelector && this.$(handleSelector);
@@ -85,11 +104,11 @@ export default Component.extend({
     this.startDragging(event);
   },
 
-  dragEnd (/*event*/) {
+  dragEnd () {
     this.endDragging();
   },
 
-  dragOver: function(/*event*/) {
+  dragOver () {
     this.reportDragOver();
   },
 
@@ -117,7 +136,9 @@ export default Component.extend({
     console.log('startDragging', handleSelector, isHandleUsed)
 
     if (handleSelector && !isHandleUsed) {
+      console.log('startDragging cancel1')
       if (!dragSortService.get('dragInProgress')) {
+        console.log('startDragging cancel2')
         event.preventDefault();
       }
       return false;

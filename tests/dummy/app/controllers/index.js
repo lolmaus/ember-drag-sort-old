@@ -2,7 +2,9 @@ import Ember from 'ember';
 
 const {
   A,
-  Controller
+  computed: {mapBy},
+  Controller,
+  inject: {service}
 } = Ember;
 
 export default Controller.extend({
@@ -10,7 +12,7 @@ export default Controller.extend({
   // ----- Static properties -----
   items:  A([{name: 'foo'}, {name: 'bar'}, {name: 'baz'}]),
   items2: A([{name: 'quux'}]),
-  
+
   recursive: {
     name: 'papa',
     children: A([
@@ -20,5 +22,10 @@ export default Controller.extend({
       {name: 'bar', children: A()},
       {name: 'baz', children: A()}
     ])
-  }
+  },
+
+  dragSort: service(),
+
+  itemNames: mapBy('dragSort.items', 'name'),
+  originalItemNames: mapBy('dragSort.originalItems', 'name'),
 });

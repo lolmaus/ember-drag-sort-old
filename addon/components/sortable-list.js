@@ -9,7 +9,6 @@ const {
 } = Ember;
 
 import layout     from 'ember-drag-sort/templates/components/sortable-list';
-import dragBetter from 'ember-drag-sort/mixins/drag-better';
 
 
 
@@ -19,10 +18,10 @@ export default Component.extend(/*dragBetter, */{
   items:                null,
   group:                'default',
   itemTagName:          'div',
-  draggingItemClass:    '-dragging',
+  draggingClass:        '-dragging',
   classNameDefault:     'sortableList',
   classNameItemDefault: 'sortableItem',
-  debouncePeriod:       300,
+  debouncePeriod:       100,
 
 
 
@@ -35,7 +34,8 @@ export default Component.extend(/*dragBetter, */{
   layout,
 
   classNameBindings: [
-    'classNameDefault'
+    'classNameDefault',
+    'draggingClassCP',
   ],
 
 
@@ -44,10 +44,27 @@ export default Component.extend(/*dragBetter, */{
 
 
 
-  // ----- Overridden methods -----
-  dragEnter (/*event*/) {
+  // ----- Computed properties -----
 
-    const item = this.get('item');
+  draggingClassCP: computed(
+    'dragSort.dragInProgress',
+    'draggingClass',
+    'group',
+    'dragSort.groupName',
+    function () {
+      if (
+        this.get('dragSort.dragInProgress')
+        && this.get('dragSort.groupName') === this.get('group')
+      ) {
+        return this.get('draggingClass');
+      }
+    }
+  ),
+
+
+
+  // ----- Overridden methods -----
+  dragEnter () {
     const items          = this.get('items');
     const service        = this.get('dragSort');
 
@@ -60,14 +77,7 @@ export default Component.extend(/*dragBetter, */{
     return false;
   },
 
-  dragEnd (/*event*/) {
-    const service = this.get('dragSort');
-    service.ended();
-
-    return false;
-  },
-
-  drop (/*event*/) {
+  drop () {
     console.log('list drop')
     const service        = this.get('dragSort');
     // const debouncePeriod = this.get('debouncePeriod');
